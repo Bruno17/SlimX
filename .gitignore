@@ -1,0 +1,23 @@
+config.core.php
+.idea
+.settings
+nbproject
+.project
+
+# ignore all .htaccess
+.htaccess
+
+# ignore composer files
+composer.phar
+#composer.json
+composer.lock
+
+core/components/slimx/vendor
+_build/site
+
+_packages/*.*
+!_packages/.gitignore
+!_packages/*.zip
+
+
+
