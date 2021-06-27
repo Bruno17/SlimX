@@ -8,4 +8,7 @@ ini_set('display_errors', '1');
 
 //$base_path = '/assets/components/slimtest';
 $base_path = '/api';
+$_GET['test'] = 'Test';
 require_once MODX_CORE_PATH . '/components/slimx/app/index.php';
+
+

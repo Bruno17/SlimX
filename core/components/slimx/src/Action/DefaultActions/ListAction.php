@@ -15,6 +15,7 @@ class ListAction extends BaseAction {
 
         $result = []; 
         $result['properties'] = $this->getProperties();
+        //$result['get'] = $this->get;
         $classname = $this->getConfig('classname');
         $status = 200; 
         $c = $xpdo->newQuery($classname);
@@ -225,10 +226,10 @@ class ListAction extends BaseAction {
 
     public function getCollection($c) {
         $classname = $this->getOption('classname');
-
         $c->prepare();        
         //echo $c->toSql();
         $rows = array();
+        /*
         if ($collection = $this->migx->getCollection($c)) {
             $pk = $this->xpdo->getPK($classname);
             foreach ($collection as $row) {
@@ -236,6 +237,15 @@ class ListAction extends BaseAction {
                 $rows[] = $row;
             }
         }
+        */
+        if ($collection = $this->modx->getCollection($classname,$c)) {
+            $pk = $this->xpdo->getPK($classname);
+            foreach ($collection as $object) {
+                $row = $object->toArray('',true,true);
+                $row['id'] = !isset($row['id']) ? $row[$pk] : $row['id'];
+                $rows[] = $row;
+            }
+        }        
         return $rows;        
     }    
     

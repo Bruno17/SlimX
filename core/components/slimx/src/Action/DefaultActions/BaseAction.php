@@ -44,8 +44,9 @@ class BaseAction {
         $this->route = $routeContext->getRoute();        
         
         $this->modx = $this->container->get('modX');
+        //let xrouting switch the context, depending on the url
         $this->modx->invokeEvent('OnHandleRequest');
-        echo 'context:' . $this->modx->context->get('key');
+        //echo 'context:' . $this->modx->context->get('key');
         $this->migx = $this->container->get('Migx');        
         
         $this->init();
@@ -54,6 +55,7 @@ class BaseAction {
     }
     
     public function init() {
+        $this->sanitizeRequest();
         $this->initProperties();
         $this->initArgProperties(); 
         $this->initConfig();
@@ -62,10 +64,20 @@ class BaseAction {
         $this->initXpdo();
     }
 
-    public function initProperties(){
-        $this->properties = $this->request->getQueryParams();
-        //$this->properties = $_GET;
+    public function sanitizeRequest(){
+        //$raw_get = $_GET;
+        if ($this->modx->getRequest()) {
+            $this->modx->request->sanitizeRequest();
+            $this->request = $this->request
+                ->withQueryParams($_GET)
+                ->withParsedBody($_POST);
+        }
+        //$_GET = $raw_get;
     }
+
+    public function initProperties(){
+        $this->properties = $this->request->getQueryParams();         
+    } 
 
     public function initArgProperties(){
         $args = $this->route->getArguments();
@@ -133,7 +145,7 @@ class BaseAction {
         if (empty($access_permission)){
             throw new HttpUnauthorizedException($this->request, '');
         }
-        if ($result && !$modx->hasPermission($access_permission)){
+        if (!$modx->hasPermission($access_permission)){
             throw new HttpUnauthorizedException($this->request);
         }
         return true;       
